@@ -305,12 +305,11 @@ export default function App() {
   if (page === 'appointments') {
     return (
       <div className="app-container">
-        <div className="page-header fade-in">
-          <button className="back-btn" onClick={goHome}>
+        <div className="nav-header fade-in">
+          <button className="back-button" onClick={goHome}>
             <ChevronLeft size={20} />
-            <span>{t('nav.back', lang)}</span>
           </button>
-          <h2 className="page-title">{t('appointments.title', lang)}</h2>
+          <h1 style={{ marginBottom: 0 }}>{t('appointments.title', lang)}</h1>
         </div>
 
         <div className="appointments-list fade-in">
