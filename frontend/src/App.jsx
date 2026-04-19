@@ -28,7 +28,7 @@ const formatTime24h = (timeStr) => {
 };
 
 // ─── Global Summary Cart ─────────────────────────────────────
-function SummaryCart({ selectedServices, selectedDate, selectedTime }) {
+function SummaryCart({ selectedServices, selectedDate, selectedTime, lang }) {
   const totalPrice = selectedServices.reduce((acc, s) => acc + s.price, 0);
   const totalDuration = selectedServices.reduce((acc, s) => acc + s.duration, 0);
 
@@ -38,7 +38,7 @@ function SummaryCart({ selectedServices, selectedDate, selectedTime }) {
   let dateStr = null;
   if (selectedDate) {
     const d = new Date(selectedDate);
-    dateStr = d.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+    dateStr = d.toLocaleDateString(lang === 'ru' ? 'ru-RU' : lang === 'hy' ? 'hy-AM' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
   return (
@@ -88,7 +88,7 @@ function SummaryCart({ selectedServices, selectedDate, selectedTime }) {
 
       {totalPrice > 0 && (
         <div style={{ borderTop: '1px solid var(--border-color)', marginTop: 'var(--spacing-sm)', paddingTop: 'var(--spacing-sm)', display: 'flex', justifyContent: 'space-between', fontWeight: '600', fontSize: '14px' }}>
-          <span>Total</span>
+          <span>{t('booking.cart.total', lang)}</span>
           <span>{totalPrice} ֏</span>
         </div>
       )}
@@ -407,6 +407,7 @@ export default function App() {
               selectedServices={selectedServices}
               setSelectedServices={setSelectedServices}
               onNext={() => setStep(2)}
+              lang={lang}
             />
           )}
           {step === 2 && (
@@ -418,6 +419,7 @@ export default function App() {
               setSelectedTime={setSelectedTime}
               onNext={() => setStep(3)}
               onBack={() => setStep(1)}
+              lang={lang}
             />
           )}
           {step === 3 && (
@@ -460,6 +462,7 @@ export default function App() {
               }}
               bookingLoading={bookingLoading}
               onBack={() => setStep(2)}
+              lang={lang}
             />
           )}
         </div>
@@ -468,7 +471,7 @@ export default function App() {
         <div className="right-panel">
           <div className="mobile-cart-toggle" onClick={() => setIsCartOpen(!isCartOpen)}>
             <span>
-              Booking {selectedServices.length} {selectedServices.length === 1 ? 'service' : 'services'} at Beauty Studio
+              {t('booking.cart.title', lang, { n: selectedServices.length })}
             </span>
             <ChevronDown size={16} style={{ transform: isCartOpen ? 'rotate(180deg)' : 'rotate(0)' }} className="cart-chevron" />
           </div>
@@ -480,6 +483,7 @@ export default function App() {
                   selectedServices={selectedServices}
                   selectedDate={selectedDate}
                   selectedTime={selectedTime}
+                  lang={lang}
                 />
               </div>
             </div>
@@ -491,7 +495,7 @@ export default function App() {
 }
 
 // ─── STEP 1: Services ─────────────────────────────────────────
-function Step1Services({ categories, services, selectedServices, setSelectedServices, onNext }) {
+function Step1Services({ categories, services, selectedServices, setSelectedServices, onNext, lang }) {
   const [expandedCat, setExpandedCat] = useState(categories[0]?.category_id);
 
   const toggleService = (svc) => {
@@ -506,7 +510,7 @@ function Step1Services({ categories, services, selectedServices, setSelectedServ
   return (
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
       <div className="nav-header">
-        <h1 style={{ marginBottom: 0 }}>Select services</h1>
+        <h1 style={{ marginBottom: 0 }}>{t('step1.title', lang)}</h1>
       </div>
 
       <div style={{ flex: 1 }}>
@@ -562,7 +566,7 @@ function Step1Services({ categories, services, selectedServices, setSelectedServ
             onClick={onNext}
             style={{ marginTop: 0 }}
           >
-            Find a time for {selectedServices.length} service{selectedServices.length > 1 ? 's' : ''}
+            {t('step1.cta', lang, { n: selectedServices.length })}
           </button>
         </div>
       )}
@@ -571,7 +575,7 @@ function Step1Services({ categories, services, selectedServices, setSelectedServ
 }
 
 // ─── STEP 2: Date & Time ──────────────────────────────────────
-function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, selectedTime, setSelectedTime, onNext, onBack }) {
+function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, selectedTime, setSelectedTime, onNext, onBack, lang }) {
   const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
   const [monthAvail, setMonthAvail] = useState({});
   const [slotsLoading, setSlotsLoading] = useState(false);
@@ -687,7 +691,7 @@ function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, select
         <button className="back-button" onClick={onBack}>
           <ChevronLeft size={20} />
         </button>
-        <h1 style={{ marginBottom: 0 }}>Day and time</h1>
+        <h1 style={{ marginBottom: 0 }}>{t('step2.title', lang)}</h1>
       </div>
 
       {renderCalendar()}
@@ -695,20 +699,20 @@ function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, select
       {selectedDate && (
         <div style={{ flex: 1 }}>
           {slotsLoading ? (
-            <LoadingSpinner text="Checking times..." />
+            <LoadingSpinner text={t('step2.checking', lang)} />
           ) : (
             <div className="time-cols">
               <div>
-                <div className="time-header">Morning</div>
-                {morningSlots.length === 0 ? <p className="text-hint">No times available</p> : (
+                <div className="time-header">{t('step2.morning', lang)}</div>
+                {morningSlots.length === 0 ? <p className="text-hint">{t('step2.no_times', lang)}</p> : (
                   <div className="slot-list">
                     {morningSlots.map((s, i) => renderTimeSlot(s, i))}
                   </div>
                 )}
               </div>
               <div>
-                <div className="time-header">Afternoon</div>
-                {afternoonSlots.length === 0 ? <p className="text-hint">No times available</p> : (
+                <div className="time-header">{t('step2.afternoon', lang)}</div>
+                {afternoonSlots.length === 0 ? <p className="text-hint">{t('step2.no_times', lang)}</p> : (
                   <div className="slot-list">
                     {afternoonSlots.map((s, i) => renderTimeSlot(s, i))}
                   </div>
@@ -726,7 +730,7 @@ function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, select
             onClick={onNext}
             style={{ marginTop: 0 }}
           >
-            Lock in {formatTime24h(selectedTime)} on {new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            {t('step2.lock', lang, { time: formatTime24h(selectedTime), date: new Date(selectedDate).toLocaleDateString(lang === 'ru' ? 'ru-RU' : lang === 'hy' ? 'hy-AM' : 'en-US', { month: 'short', day: 'numeric' }) })}
           </button>
         </div>
       )}
@@ -747,7 +751,7 @@ function Step2DateTime({ selectedServices, selectedDate, setSelectedDate, select
       >
         <span style={{ fontWeight: '500', fontSize: '15px' }}>{formatTime24h(s.time)}</span>
         {isSelected && (
-          <span className="slot-ends">ends {addMinutesToTime(s.time, totalDuration)}</span>
+          <span className="slot-ends">{t('step2.ends', lang)} {addMinutesToTime(s.time, totalDuration)}</span>
         )}
       </button>
     );
@@ -762,7 +766,7 @@ function Step3Details({
   comments, setComments,
   rememberMe, setRememberMe,
   policyAgreed, setPolicyAgreed,
-  onBook, bookingLoading, onBack
+  onBook, bookingLoading, onBack, lang
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const isValid = firstName.trim() && lastName.trim() && phone.trim() && policyAgreed;
@@ -774,26 +778,26 @@ function Step3Details({
         <button className="back-button" onClick={onBack}>
           <ChevronLeft size={20} />
         </button>
-        <h1 style={{ marginBottom: 0 }}>Your details</h1>
+        <h1 style={{ marginBottom: 0 }}>{t('step3.title', lang)}</h1>
       </div>
 
       <div style={{ flex: 1 }}>
         <div className="form-group">
-          <label className="form-label">First name</label>
+          <label className="form-label">{t('step3.firstName', lang)}</label>
           <input className="form-input" value={firstName} onChange={e => setFirstName(e.target.value)} />
         </div>
         <div className="form-group">
-          <label className="form-label">Last name</label>
+          <label className="form-label">{t('step3.lastName', lang)}</label>
           <input className="form-input" value={lastName} onChange={e => setLastName(e.target.value)} />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Email (optional)</label>
+          <label className="form-label">{t('step3.email', lang)}</label>
           <input type="email" className="form-input" value={email} onChange={e => setEmail(e.target.value)} />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Mobile phone</label>
+          <label className="form-label">{t('step3.phone', lang)}</label>
           <div className="phone-input-wrapper">
             <div className="phone-prefix">
               <select 
@@ -827,7 +831,7 @@ function Step3Details({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Comments (optional)</label>
+          <label className="form-label">{t('step3.comments', lang)}</label>
           <textarea 
             className="form-input" 
             maxLength={250} 
@@ -835,7 +839,7 @@ function Step3Details({
             onChange={e => setComments(e.target.value)} 
           />
           <div className="text-hint" style={{ textAlign: 'right', marginTop: '4px', fontSize: '11px' }}>
-            You have {250 - comments.length} chars left.
+            {250 - comments.length}
           </div>
         </div>
 
@@ -848,7 +852,7 @@ function Step3Details({
           >
             {rememberMe && <Check size={14} />}
           </div>
-          <span style={{ fontSize: '14px' }}>Remember me</span>
+          <span style={{ fontSize: '14px' }}>{t('step3.remember', lang)}</span>
           <Info 
             size={16} 
             color="var(--text-secondary)" 
@@ -871,15 +875,15 @@ function Step3Details({
 
         {/* Cancellation Policy */}
         <div className="policy-box">
-          <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>Cancellation policy</div>
+          <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{t('step3.policy', lang)}</div>
           <div className="text-hint" style={{ marginBottom: '12px' }}>
-            No cancellations or changes allowed within 24 hours of the appointment.
+            {t('step3.policyText', lang)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setPolicyAgreed(!policyAgreed)}>
             <div className={`checkbox ${policyAgreed ? 'checked' : ''}`}>
               {policyAgreed && <Check size={14} />}
             </div>
-            <span style={{ fontSize: '14px', fontWeight: '500' }}>I agree</span>
+            <span style={{ fontSize: '14px', fontWeight: '500' }}>{t('step3.agree', lang)}</span>
           </div>
         </div>
       </div>
@@ -891,7 +895,7 @@ function Step3Details({
           disabled={!isValid || bookingLoading}
           style={{ marginTop: 0 }}
         >
-          {bookingLoading ? 'Booking...' : `Confirm Booking for ${totalPrice} ֏`}
+          {bookingLoading ? t('booking.loading', lang) : `${t('booking.confirm', lang)} ${totalPrice} ֏`}
         </button>
       </div>
     </div>
