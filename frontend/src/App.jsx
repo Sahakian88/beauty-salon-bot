@@ -394,11 +394,6 @@ export default function App() {
       <div className="main-content">
         {/* Left Panel: Active Step */}
         <div className="left-panel">
-          {/* Back to Home */}
-          <button className="back-btn" onClick={goHome} style={{ marginBottom: '12px' }}>
-            <ChevronLeft size={20} />
-            <span>{t('nav.back', lang)}</span>
-          </button>
 
           {step === 1 && (
             <Step1Services 
@@ -406,6 +401,7 @@ export default function App() {
               services={services} 
               selectedServices={selectedServices}
               setSelectedServices={setSelectedServices}
+              onBack={goHome}
               onNext={() => setStep(2)}
               lang={lang}
             />
@@ -495,7 +491,7 @@ export default function App() {
 }
 
 // ─── STEP 1: Services ─────────────────────────────────────────
-function Step1Services({ categories, services, selectedServices, setSelectedServices, onNext, lang }) {
+function Step1Services({ categories, services, selectedServices, setSelectedServices, onBack, onNext, lang }) {
   const [expandedCat, setExpandedCat] = useState(categories[0]?.category_id);
 
   const toggleService = (svc) => {
@@ -510,6 +506,9 @@ function Step1Services({ categories, services, selectedServices, setSelectedServ
   return (
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
       <div className="nav-header">
+        <button className="back-button" onClick={onBack}>
+          <ChevronLeft size={20} />
+        </button>
         <h1 style={{ marginBottom: 0 }}>{t('step1.title', lang)}</h1>
       </div>
 
