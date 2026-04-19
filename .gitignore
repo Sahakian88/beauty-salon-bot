@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+venv/
+*.db
+*.zip
+*.resolved
+test_db.py
+frontend/node_modules/
+frontend/dist/
+.agent/
